@@ -4,7 +4,8 @@ import argparse
 from datetime import datetime
 
 def nmap_scan(target):
-    print("[+] Starting Nmap scan on", target)
+    """Performs an Nmap scan on the specified target and saves the results."""
+    print(f"[+] Starting Nmap scan on {target}")
     try:
         scan_result = subprocess.check_output(["nmap", "-sV", "-O", target], text=True)
         print(scan_result)
@@ -12,19 +13,21 @@ def nmap_scan(target):
             f.write(scan_result)
         print("[+] Nmap scan completed. Results saved.")
     except subprocess.CalledProcessError as e:
-        print("[!] Error during Nmap scan:", e.output)
+        print(f"[!] Error during Nmap scan: {e.output}")
 
 def capture_traffic(interface, duration):
+    """Captures network traffic on the specified interface for a given duration."""
     print(f"[+] Starting traffic capture on interface {interface} for {duration} seconds")
     try:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         pcap_file = f"traffic_capture_{timestamp}.pcap"
-        subprocess.run(["tshark", "-i", interface, "-a", f"duration:{duration}", "-w", pcap_file])
+        subprocess.run(["tshark", "-i", interface, "-a", f"duration:{duration}", "-w", pcap_file], check=True)
         print(f"[+] Traffic capture completed. File saved: {pcap_file}")
     except Exception as e:
-        print("[!] Error during traffic capture:", e)
+        print(f"[!] Error during traffic capture: {e}")
 
 def main():
+    """Main function to handle command-line arguments and invoke the appropriate functionality."""
     parser = argparse.ArgumentParser(description="Network Security Assessment Tool")
     parser.add_argument("--scan", help="Target IP or domain for Nmap scan")
     parser.add_argument("--capture", help="Network interface for traffic capture")
